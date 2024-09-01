@@ -78,8 +78,3 @@ If you would like to contribute to the project, feel free to submit a **Pull Req
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
-```
-
-### Explanation
-
-This `README.md` provides a clear, concise, and professional description of your project. It highlights the technologies used, details the current configuration (including the optional Spring Security password bypass), and outlines future plans for React frontend integration. It also encourages collaboration and provides a foundation for further enhancements.
