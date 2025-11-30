@@ -12,12 +12,11 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf().disable()
+        http.csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                .requestMatchers("/inventory/health").permitAll() // Health endpoint'ini güvenlikten muaf tut
-                .anyRequest().authenticated() // Diğer tüm istekler için kimlik doğrulama iste
-            )
-            .httpBasic(); // Temel kimlik doğrulamayı etkinleştir
+                .requestMatchers("/inventory/**", "/actuator/**").permitAll() // Development mode - permit all
+                .anyRequest().permitAll()
+            );
 
         return http.build();
     }
