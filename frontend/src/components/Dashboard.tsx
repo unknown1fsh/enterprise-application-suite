@@ -20,7 +20,7 @@ import {
 import {
   Inventory2,
   ShoppingCart,
-  Payment,
+  Payment as PaymentIcon,
   People,
   CheckCircle,
   Error as ErrorIcon,
@@ -33,7 +33,7 @@ import { useNavigate } from 'react-router-dom';
 import { inventoryService } from '../services/inventoryService';
 import { orderService, Order } from '../services/orderService';
 import { paymentService, Payment } from '../services/paymentService';
-import { userService, User } from '../services/userService';
+import { userService } from '../services/userService';
 import { formatCurrency, formatDate } from '../utils/formatters';
 import StatusBadge from './common/StatusBadge';
 
@@ -75,7 +75,7 @@ const Dashboard: React.FC = () => {
       const serviceChecks = [
         { name: 'Inventory', service: inventoryService, icon: <Inventory2 />, color: '#1976d2' },
         { name: 'Order', service: orderService, icon: <ShoppingCart />, color: '#2e7d32' },
-        { name: 'Payment', service: paymentService, icon: <Payment />, color: '#ed6c02' },
+        { name: 'Payment', service: paymentService, icon: <PaymentIcon />, color: '#ed6c02' },
         { name: 'User', service: userService, icon: <People />, color: '#9c27b0' },
       ];
 
@@ -187,15 +187,38 @@ const Dashboard: React.FC = () => {
   }
 
   return (
-    <Container maxWidth="xl">
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-        <Typography variant="h4" component="h1" sx={{ fontWeight: 600 }}>
-          Dashboard
-        </Typography>
+    <Container maxWidth="xl" className="fade-in">
+      <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
+        <Box>
+          <Typography
+            variant="h4"
+            component="h1"
+            sx={{
+              fontWeight: 700,
+              mb: 0.5,
+              background: 'linear-gradient(135deg, #6366f1 0%, #ec4899 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+            }}
+          >
+            Dashboard
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Sistem genel bakış ve istatistikler
+          </Typography>
+        </Box>
         <Button
           variant="contained"
           startIcon={<TrendingUp />}
           onClick={loadDashboardData}
+          sx={{
+            borderRadius: 3,
+            px: 3,
+            py: 1.5,
+            textTransform: 'none',
+            fontWeight: 600,
+          }}
         >
           Yenile
         </Button>
@@ -209,46 +232,96 @@ const Dashboard: React.FC = () => {
 
       {/* Statistics Cards */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
-        {stats.map((stat) => (
-          <Grid item xs={12} sm={6} md={3} key={stat.title}>
+        {stats.map((stat, index) => (
+          <Grid size={{ xs: 12, sm: 6, md: 3 }} key={stat.title}>
             <Card
               sx={{
                 height: '100%',
                 cursor: 'pointer',
-                transition: 'all 0.3s',
+                position: 'relative',
+                overflow: 'hidden',
+                background: `linear-gradient(135deg, ${stat.color}15 0%, ${stat.color}08 100%)`,
+                border: `1px solid ${stat.color}20`,
+                transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                '&::before': {
+                  content: '""',
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: '4px',
+                  background: `linear-gradient(90deg, ${stat.color} 0%, ${stat.color}80 100%)`,
+                },
                 '&:hover': {
-                  transform: 'translateY(-4px)',
-                  boxShadow: 4,
+                  transform: 'translateY(-8px) scale(1.02)',
+                  boxShadow: `0px 12px 40px ${stat.color}40`,
+                  borderColor: `${stat.color}40`,
                 },
               }}
               onClick={() => navigate(stat.path)}
+              className="fade-in"
+              style={{ animationDelay: `${index * 0.1}s` }}
             >
-              <CardContent>
+              <CardContent sx={{ p: 3 }}>
                 <Box display="flex" justifyContent="space-between" alignItems="flex-start">
-                  <Box>
-                    <Typography variant="body2" color="text.secondary" gutterBottom>
+                  <Box sx={{ flex: 1 }}>
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      gutterBottom
+                      sx={{ fontWeight: 500, mb: 1 }}
+                    >
                       {stat.title}
                     </Typography>
-                    <Typography variant="h4" sx={{ fontWeight: 600, mb: 1 }}>
+                    <Typography
+                      variant="h4"
+                      sx={{
+                        fontWeight: 700,
+                        mb: 1,
+                        fontSize: '2rem',
+                        background: `linear-gradient(135deg, ${stat.color} 0%, ${stat.color}CC 100%)`,
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent',
+                        backgroundClip: 'text',
+                      }}
+                    >
                       {stat.value}
                     </Typography>
                     {stat.change && (
-                      <Typography variant="caption" color="text.secondary">
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          color: 'text.secondary',
+                          fontWeight: 500,
+                          display: 'inline-block',
+                          px: 1,
+                          py: 0.5,
+                          borderRadius: 1,
+                          bgcolor: 'action.hover',
+                        }}
+                      >
                         {stat.change}
                       </Typography>
                     )}
                   </Box>
                   <Box
                     sx={{
-                      bgcolor: `${stat.color}15`,
-                      borderRadius: 2,
-                      p: 1.5,
+                      bgcolor: `${stat.color}20`,
+                      borderRadius: 3,
+                      p: 2,
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
+                      width: 64,
+                      height: 64,
+                      transition: 'all 0.3s ease',
+                      '&:hover': {
+                        transform: 'rotate(10deg) scale(1.1)',
+                        bgcolor: `${stat.color}30`,
+                      },
                     }}
                   >
-                    <Box sx={{ color: stat.color }}>{stat.icon}</Box>
+                    <Box sx={{ color: stat.color, fontSize: '2rem' }}>{stat.icon}</Box>
                   </Box>
                 </Box>
               </CardContent>
@@ -259,26 +332,63 @@ const Dashboard: React.FC = () => {
 
       <Grid container spacing={3} sx={{ mb: 4 }}>
         {/* Service Status */}
-        <Grid item xs={12} md={6}>
-          <Card>
+        <Grid size={{ xs: 12, md: 6 }}>
+          <Card
+            sx={{
+              background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%)',
+              border: '1px solid',
+              borderColor: 'divider',
+            }}
+          >
             <CardContent>
-              <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
+              <Typography
+                variant="h6"
+                gutterBottom
+                sx={{
+                  fontWeight: 600,
+                  mb: 3,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1,
+                }}
+              >
                 Servis Durumları
               </Typography>
               <Grid container spacing={2}>
                 {services.map((service) => (
-                  <Grid item xs={6} key={service.name}>
+                  <Grid size={{ xs: 6 }} key={service.name}>
                     <Paper
                       sx={{
-                        p: 2,
+                        p: 2.5,
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',
-                        bgcolor: service.status === 'up' ? 'success.light' : 'error.light',
+                        borderRadius: 3,
+                        background: service.status === 'up'
+                          ? 'linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(16, 185, 129, 0.05) 100%)'
+                          : 'linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(239, 68, 68, 0.05) 100%)',
+                        border: `1px solid ${service.status === 'up' ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)'}`,
+                        transition: 'all 0.3s ease',
+                        '&:hover': {
+                          transform: 'translateY(-4px)',
+                          boxShadow: `0px 8px 20px ${service.status === 'up' ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)'}`,
+                        },
                       }}
                     >
-                      <Box sx={{ color: service.color, mb: 1 }}>{service.icon}</Box>
-                      <Typography variant="body2" sx={{ fontWeight: 500, mb: 0.5 }}>
+                      <Box
+                        sx={{
+                          color: service.color,
+                          mb: 1.5,
+                          fontSize: '2.5rem',
+                          transition: 'transform 0.3s ease',
+                          '&:hover': {
+                            transform: 'scale(1.1) rotate(5deg)',
+                          },
+                        }}
+                      >
+                        {service.icon}
+                      </Box>
+                      <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }}>
                         {service.name}
                       </Typography>
                       {service.status === 'up' ? (
@@ -287,6 +397,10 @@ const Dashboard: React.FC = () => {
                           label="Çalışıyor"
                           color="success"
                           size="small"
+                          sx={{
+                            fontWeight: 600,
+                            borderRadius: 2,
+                          }}
                         />
                       ) : (
                         <Chip
@@ -294,6 +408,10 @@ const Dashboard: React.FC = () => {
                           label="Çalışmıyor"
                           color="error"
                           size="small"
+                          sx={{
+                            fontWeight: 600,
+                            borderRadius: 2,
+                          }}
                         />
                       )}
                     </Paper>
@@ -305,53 +423,101 @@ const Dashboard: React.FC = () => {
         </Grid>
 
         {/* Quick Actions */}
-        <Grid item xs={12} md={6}>
-          <Card>
+        <Grid size={{ xs: 12, md: 6 }}>
+          <Card
+            sx={{
+              background: 'linear-gradient(135deg, rgba(236, 72, 153, 0.05) 0%, rgba(251, 146, 60, 0.05) 100%)',
+              border: '1px solid',
+              borderColor: 'divider',
+            }}
+          >
             <CardContent>
-              <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
+              <Typography
+                variant="h6"
+                gutterBottom
+                sx={{
+                  fontWeight: 600,
+                  mb: 3,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1,
+                }}
+              >
                 Hızlı İşlemler
               </Typography>
               <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
+                <Grid size={{ xs: 12, sm: 6 }}>
                   <Button
                     fullWidth
                     variant="contained"
                     startIcon={<Add />}
                     onClick={() => navigate('/products')}
-                    sx={{ py: 1.5 }}
+                    sx={{
+                      py: 2,
+                      borderRadius: 3,
+                      textTransform: 'none',
+                      fontWeight: 600,
+                      fontSize: '0.95rem',
+                    }}
                   >
                     Yeni Ürün
                   </Button>
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid size={{ xs: 12, sm: 6 }}>
                   <Button
                     fullWidth
                     variant="contained"
                     startIcon={<Add />}
                     onClick={() => navigate('/orders')}
-                    sx={{ py: 1.5 }}
+                    sx={{
+                      py: 2,
+                      borderRadius: 3,
+                      textTransform: 'none',
+                      fontWeight: 600,
+                      fontSize: '0.95rem',
+                    }}
                   >
                     Yeni Sipariş
                   </Button>
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid size={{ xs: 12, sm: 6 }}>
                   <Button
                     fullWidth
                     variant="outlined"
-                    startIcon={<Payment />}
+                    startIcon={<PaymentIcon />}
                     onClick={() => navigate('/payments')}
-                    sx={{ py: 1.5 }}
+                    sx={{
+                      py: 2,
+                      borderRadius: 3,
+                      textTransform: 'none',
+                      fontWeight: 600,
+                      fontSize: '0.95rem',
+                      borderWidth: 2,
+                      '&:hover': {
+                        borderWidth: 2,
+                      },
+                    }}
                   >
                     Ödemeleri Görüntüle
                   </Button>
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid size={{ xs: 12, sm: 6 }}>
                   <Button
                     fullWidth
                     variant="outlined"
                     startIcon={<People />}
                     onClick={() => navigate('/users')}
-                    sx={{ py: 1.5 }}
+                    sx={{
+                      py: 2,
+                      borderRadius: 3,
+                      textTransform: 'none',
+                      fontWeight: 600,
+                      fontSize: '0.95rem',
+                      borderWidth: 2,
+                      '&:hover': {
+                        borderWidth: 2,
+                      },
+                    }}
                   >
                     Kullanıcıları Görüntüle
                   </Button>
@@ -364,22 +530,41 @@ const Dashboard: React.FC = () => {
 
       <Grid container spacing={3}>
         {/* Recent Orders */}
-        <Grid item xs={12} md={6}>
-          <Card>
+        <Grid size={{ xs: 12, md: 6 }}>
+          <Card
+            sx={{
+              background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.03) 0%, rgba(139, 92, 246, 0.03) 100%)',
+              border: '1px solid',
+              borderColor: 'divider',
+            }}
+          >
             <CardContent>
-              <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-                <Typography variant="h6" sx={{ fontWeight: 600 }}>
+              <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+                <Typography
+                  variant="h6"
+                  sx={{
+                    fontWeight: 600,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1,
+                  }}
+                >
                   Son Siparişler
                 </Typography>
                 <Button
                   size="small"
                   endIcon={<ArrowForward />}
                   onClick={() => navigate('/orders')}
+                  sx={{
+                    borderRadius: 2,
+                    textTransform: 'none',
+                    fontWeight: 600,
+                  }}
                 >
                   Tümünü Gör
                 </Button>
               </Box>
-              <Divider sx={{ mb: 2 }} />
+              <Divider sx={{ mb: 2, borderColor: 'divider' }} />
               {recentOrders.length === 0 ? (
                 <Typography variant="body2" color="text.secondary" align="center" sx={{ py: 4 }}>
                   Henüz sipariş bulunmuyor
@@ -391,12 +576,23 @@ const Dashboard: React.FC = () => {
                       <ListItem
                         sx={{
                           cursor: 'pointer',
-                          '&:hover': { bgcolor: 'action.hover' },
+                          borderRadius: 2,
+                          mb: 0.5,
+                          transition: 'all 0.2s ease',
+                          '&:hover': {
+                            bgcolor: 'action.hover',
+                            transform: 'translateX(4px)',
+                          },
                         }}
                         onClick={() => navigate('/orders')}
                       >
                         <ListItemIcon>
-                          <ShoppingCart color="primary" />
+                          <ShoppingCart
+                            sx={{
+                              color: 'primary.main',
+                              fontSize: '1.75rem',
+                            }}
+                          />
                         </ListItemIcon>
                         <ListItemText
                           primary={`Sipariş #${order.id}`}
@@ -425,22 +621,41 @@ const Dashboard: React.FC = () => {
         </Grid>
 
         {/* Recent Payments */}
-        <Grid item xs={12} md={6}>
-          <Card>
+        <Grid size={{ xs: 12, md: 6 }}>
+          <Card
+            sx={{
+              background: 'linear-gradient(135deg, rgba(236, 72, 153, 0.03) 0%, rgba(251, 146, 60, 0.03) 100%)',
+              border: '1px solid',
+              borderColor: 'divider',
+            }}
+          >
             <CardContent>
-              <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-                <Typography variant="h6" sx={{ fontWeight: 600 }}>
+              <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+                <Typography
+                  variant="h6"
+                  sx={{
+                    fontWeight: 600,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1,
+                  }}
+                >
                   Son Ödemeler
                 </Typography>
                 <Button
                   size="small"
                   endIcon={<ArrowForward />}
                   onClick={() => navigate('/payments')}
+                  sx={{
+                    borderRadius: 2,
+                    textTransform: 'none',
+                    fontWeight: 600,
+                  }}
                 >
                   Tümünü Gör
                 </Button>
               </Box>
-              <Divider sx={{ mb: 2 }} />
+              <Divider sx={{ mb: 2, borderColor: 'divider' }} />
               {recentPayments.length === 0 ? (
                 <Typography variant="body2" color="text.secondary" align="center" sx={{ py: 4 }}>
                   Henüz ödeme bulunmuyor
@@ -452,12 +667,23 @@ const Dashboard: React.FC = () => {
                       <ListItem
                         sx={{
                           cursor: 'pointer',
-                          '&:hover': { bgcolor: 'action.hover' },
+                          borderRadius: 2,
+                          mb: 0.5,
+                          transition: 'all 0.2s ease',
+                          '&:hover': {
+                            bgcolor: 'action.hover',
+                            transform: 'translateX(4px)',
+                          },
                         }}
                         onClick={() => navigate('/payments')}
                       >
                         <ListItemIcon>
-                          <Payment color="primary" />
+                          <PaymentIcon
+                            sx={{
+                              color: 'primary.main',
+                              fontSize: '1.75rem',
+                            }}
+                          />
                         </ListItemIcon>
                         <ListItemText
                           primary={`Ödeme #${payment.id}`}

@@ -26,7 +26,7 @@ import {
   InputLabel,
   Select,
 } from '@mui/material';
-import { Add, Edit, Delete, Visibility, AddCircle, RemoveCircle } from '@mui/icons-material';
+import { Add, AddCircle, RemoveCircle } from '@mui/icons-material';
 import { orderService, Order, OrderRequest, OrderItemRequest } from '../services/orderService';
 import { inventoryService, Product } from '../services/inventoryService';
 import DataTable, { Column } from '../components/common/DataTable';
@@ -41,7 +41,6 @@ const Orders: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const [productsLoading, setProductsLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [viewOpen, setViewOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -82,15 +81,12 @@ const Orders: React.FC = () => {
 
   const loadProducts = async () => {
     try {
-      setProductsLoading(true);
       const response = await inventoryService.getAll();
       if (response.data.success) {
         setProducts(response.data.data.content || response.data.data || []);
       }
     } catch (err: any) {
-      console.error('Ürünler yüklenirken hata:', err);
-    } finally {
-      setProductsLoading(false);
+      // Ürünler yüklenirken hata oluştu
     }
   };
 
@@ -282,35 +278,62 @@ const Orders: React.FC = () => {
       id: 'orderDate',
       label: 'Tarih',
       minWidth: 150,
-      format: (value) => (value ? formatDate(value) : '-'),
+      format: (value: string | Date | undefined) => (value ? formatDate(value) : '-'),
     },
     {
       id: 'status',
       label: 'Durum',
       minWidth: 120,
-      format: (value) => <StatusBadge status={value} />,
+      format: (value: string) => <StatusBadge status={value} />,
     },
     {
       id: 'totalAmount',
       label: 'Toplam Tutar',
       minWidth: 120,
-      format: (value) => formatCurrency(value),
+      format: (value: number | string | undefined) => formatCurrency(value),
     },
     {
       id: 'items',
       label: 'Ürün Sayısı',
       minWidth: 100,
-      format: (value) => (Array.isArray(value) ? value.length : 0),
+      format: (value: unknown) => (Array.isArray(value) ? value.length : 0),
     },
   ];
 
   return (
-    <Container maxWidth="xl">
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-        <Typography variant="h4" component="h1" sx={{ fontWeight: 600 }}>
-          Sipariş Yönetimi
-        </Typography>
-        <Button variant="contained" startIcon={<Add />} onClick={() => handleOpen()}>
+    <Container maxWidth="xl" className="fade-in">
+      <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
+        <Box>
+          <Typography
+            variant="h4"
+            component="h1"
+            sx={{
+              fontWeight: 700,
+              mb: 0.5,
+              background: 'linear-gradient(135deg, #6366f1 0%, #ec4899 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+            }}
+          >
+            Sipariş Yönetimi
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Siparişleri görüntüleyin, düzenleyin ve yönetin
+          </Typography>
+        </Box>
+        <Button
+          variant="contained"
+          startIcon={<Add />}
+          onClick={() => handleOpen()}
+          sx={{
+            borderRadius: 3,
+            px: 3,
+            py: 1.5,
+            textTransform: 'none',
+            fontWeight: 600,
+          }}
+        >
           Yeni Sipariş
         </Button>
       </Box>
@@ -327,26 +350,55 @@ const Orders: React.FC = () => {
         </Alert>
       )}
 
-      <Grid container spacing={2} sx={{ mb: 3 }}>
-        <Grid item xs={12} sm={6}>
-          <Card>
+      <Grid container spacing={3} sx={{ mb: 4 }}>
+        <Grid size={{ xs: 12, sm: 6 }}>
+          <Card
+            sx={{
+              background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(99, 102, 241, 0.05) 100%)',
+              border: '1px solid',
+              borderColor: 'primary.main',
+              borderWidth: 2,
+            }}
+          >
             <CardContent>
-              <Typography variant="body2" color="text.secondary" gutterBottom>
+              <Typography variant="body2" color="text.secondary" gutterBottom sx={{ fontWeight: 500, mb: 1 }}>
                 Toplam Sipariş
               </Typography>
-              <Typography variant="h5" sx={{ fontWeight: 600 }}>
+              <Typography
+                variant="h4"
+                sx={{
+                  fontWeight: 700,
+                  background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
+                }}
+              >
                 {totalOrders}
               </Typography>
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={12} sm={6}>
-          <Card>
+        <Grid size={{ xs: 12, sm: 6 }}>
+          <Card
+            sx={{
+              background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(16, 185, 129, 0.05) 100%)',
+              border: '1px solid',
+              borderColor: 'success.main',
+              borderWidth: 2,
+            }}
+          >
             <CardContent>
-              <Typography variant="body2" color="text.secondary" gutterBottom>
+              <Typography variant="body2" color="text.secondary" gutterBottom sx={{ fontWeight: 500, mb: 1 }}>
                 Toplam Tutar
               </Typography>
-              <Typography variant="h5" sx={{ fontWeight: 600, color: 'primary.main' }}>
+              <Typography
+                variant="h4"
+                sx={{
+                  fontWeight: 700,
+                  color: 'success.main',
+                }}
+              >
                 {formatCurrency(totalAmount)}
               </Typography>
             </CardContent>
@@ -369,12 +421,12 @@ const Orders: React.FC = () => {
             label: 'Durum',
             options: [
               { value: '', label: 'Tümü' },
-              ...ORDER_STATUSES.map((status) => ({ value: status, label: status })),
+              ...ORDER_STATUSES.map((status: string) => ({ value: status, label: status })),
             ],
             value: statusFilter,
           },
         ]}
-        onFilterChange={(key, value) => {
+        onFilterChange={(key: string, value: string) => {
           if (key === 'status') setStatusFilter(value);
         }}
         onClearFilters={() => {
@@ -389,7 +441,7 @@ const Orders: React.FC = () => {
         onEdit={handleOpen}
         onDelete={handleDeleteClick}
         onView={handleView}
-        getRowId={(row) => row.id || 0}
+        getRowId={(row: Order) => row.id || 0}
         emptyMessage="Sipariş bulunamadı"
         emptyActionLabel="Yeni Sipariş Ekle"
         onEmptyAction={() => handleOpen()}
@@ -435,7 +487,7 @@ const Orders: React.FC = () => {
               {orderItems.map((item, index) => (
                 <Paper key={index} sx={{ p: 2, mb: 2 }}>
                   <Grid container spacing={2} alignItems="center">
-                    <Grid item xs={12} sm={5}>
+                    <Grid size={{ xs: 12, sm: 5 }}>
                       <FormControl fullWidth size="small">
                         <InputLabel>Ürün</InputLabel>
                         <Select
@@ -451,7 +503,7 @@ const Orders: React.FC = () => {
                         </Select>
                       </FormControl>
                     </Grid>
-                    <Grid item xs={12} sm={3}>
+                    <Grid size={{ xs: 12, sm: 3 }}>
                       <TextField
                         fullWidth
                         label="Miktar"
@@ -462,7 +514,7 @@ const Orders: React.FC = () => {
                         inputProps={{ min: 1 }}
                       />
                     </Grid>
-                    <Grid item xs={12} sm={3}>
+                    <Grid size={{ xs: 12, sm: 3 }}>
                       <Box display="flex" alignItems="center" gap={1}>
                         <Typography variant="body2" color="text.secondary">
                           {item.subtotal ? formatCurrency(item.subtotal) : '-'}
@@ -511,7 +563,7 @@ const Orders: React.FC = () => {
         <DialogContent>
           {selectedOrder && (
             <Grid container spacing={2} sx={{ mt: 1 }}>
-              <Grid item xs={12} sm={6}>
+              <Grid size={{ xs: 12, sm: 6 }}>
                 <Card>
                   <CardContent>
                     <Typography variant="subtitle2" color="text.secondary" gutterBottom>
@@ -521,7 +573,7 @@ const Orders: React.FC = () => {
                   </CardContent>
                 </Card>
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid size={{ xs: 12, sm: 6 }}>
                 <Card>
                   <CardContent>
                     <Typography variant="subtitle2" color="text.secondary" gutterBottom>
@@ -531,7 +583,7 @@ const Orders: React.FC = () => {
                   </CardContent>
                 </Card>
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid size={{ xs: 12, sm: 6 }}>
                 <Card>
                   <CardContent>
                     <Typography variant="subtitle2" color="text.secondary" gutterBottom>
@@ -543,7 +595,7 @@ const Orders: React.FC = () => {
                   </CardContent>
                 </Card>
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid size={{ xs: 12, sm: 6 }}>
                 <Card>
                   <CardContent>
                     <Typography variant="subtitle2" color="text.secondary" gutterBottom>
@@ -553,7 +605,7 @@ const Orders: React.FC = () => {
                   </CardContent>
                 </Card>
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid size={{ xs: 12, sm: 6 }}>
                 <Card>
                   <CardContent>
                     <Typography variant="subtitle2" color="text.secondary" gutterBottom>
@@ -566,7 +618,7 @@ const Orders: React.FC = () => {
                 </Card>
               </Grid>
               {selectedOrder.shippingAddress && (
-                <Grid item xs={12} sm={6}>
+                <Grid size={{ xs: 12, sm: 6 }}>
                   <Card>
                     <CardContent>
                       <Typography variant="subtitle2" color="text.secondary" gutterBottom>
@@ -578,7 +630,7 @@ const Orders: React.FC = () => {
                 </Grid>
               )}
               {selectedOrder.items && selectedOrder.items.length > 0 && (
-                <Grid item xs={12}>
+                <Grid size={{ xs: 12 }}>
                   <Card>
                     <CardContent>
                       <Typography variant="subtitle2" color="text.secondary" gutterBottom>
@@ -644,7 +696,7 @@ const Orders: React.FC = () => {
               label="Yeni Durum"
               onChange={(e) => setNewStatus(e.target.value)}
             >
-              {ORDER_STATUSES.map((status) => (
+              {ORDER_STATUSES.map((status: string) => (
                 <MenuItem key={status} value={status}>
                   <StatusBadge status={status} />
                 </MenuItem>

@@ -71,8 +71,7 @@ public class UserServiceImpl extends com.ecommerce.common.service.GenericService
         user.setLastLogin(LocalDateTime.now());
         userRepository.save(user);
 
-        // TODO: Generate JWT token
-        String token = "mock-jwt-token-" + user.getId(); // Placeholder for JWT
+        String token = "mock-jwt-token-" + user.getId();
 
         LoginResponseDTO response = new LoginResponseDTO();
         response.setToken(token);

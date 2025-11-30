@@ -4,7 +4,6 @@ import {
   AppBar,
   Toolbar,
   Typography,
-  Button,
   Box,
   Drawer,
   List,
@@ -22,7 +21,6 @@ import {
   Link,
   useTheme,
   useMediaQuery,
-  Collapse,
   Snackbar,
   Alert,
 } from '@mui/material';
@@ -34,8 +32,6 @@ import {
   People,
   Logout,
   Menu as MenuIcon,
-  ExpandLess,
-  ExpandMore,
   Settings,
   AccountCircle,
   Brightness4,
@@ -49,11 +45,11 @@ import { useThemeMode } from '../hooks/useTheme';
 
 const drawerWidth = 280;
 
-interface MenuItem {
+interface NavigationMenuItem {
   text: string;
   icon: React.ReactNode;
   path: string;
-  children?: MenuItem[];
+  children?: NavigationMenuItem[];
 }
 
 const Layout: React.FC = () => {
@@ -65,7 +61,6 @@ const Layout: React.FC = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [notificationAnchor, setNotificationAnchor] = useState<null | HTMLElement>(null);
-  const [openMenus, setOpenMenus] = useState<{ [key: string]: boolean }>({});
   const { mode, toggleMode } = useThemeMode();
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
   const user = useSelector((state: RootState) => state.auth.user);
@@ -75,7 +70,7 @@ const Layout: React.FC = () => {
     severity: 'info',
   });
 
-  const menuItems: MenuItem[] = [
+  const menuItems: NavigationMenuItem[] = [
     {
       text: 'Dashboard',
       icon: <Dashboard />,
@@ -158,45 +153,97 @@ const Layout: React.FC = () => {
   }
 
   const drawer = (
-    <Box>
+    <Box
+      sx={{
+        height: '100%',
+        background: mode === 'dark'
+          ? 'linear-gradient(180deg, #1e293b 0%, #0f172a 100%)'
+          : 'linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)',
+      }}
+    >
       <Toolbar
         sx={{
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          px: [1],
-          bgcolor: 'primary.main',
-          color: 'primary.contrastText',
+          px: 2,
+          py: 3,
+          background: mode === 'dark'
+            ? 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)'
+            : 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
+          color: '#ffffff',
+          boxShadow: '0px 4px 20px rgba(99, 102, 241, 0.3)',
         }}
       >
-        <Typography variant="h6" noWrap component="div" sx={{ fontWeight: 600 }}>
+        <Typography
+          variant="h6"
+          noWrap
+          component="div"
+          sx={{
+            fontWeight: 700,
+            fontSize: '1.25rem',
+            letterSpacing: '0.5px',
+            textShadow: '0px 2px 4px rgba(0,0,0,0.2)',
+          }}
+        >
           E-Commerce Suite
         </Typography>
       </Toolbar>
-      <Divider />
-      <List>
-        {menuItems.map((item) => (
-          <ListItem key={item.text} disablePadding>
+      <Divider sx={{ borderColor: mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)' }} />
+      <List sx={{ px: 1.5, py: 2 }}>
+        {menuItems.map((item, index) => (
+          <ListItem key={item.text} disablePadding sx={{ mb: 0.5 }}>
             <ListItemButton
               selected={location.pathname === item.path}
               onClick={() => handleMenuClick(item.path)}
               sx={{
+                borderRadius: 3,
+                py: 1.5,
+                px: 2,
+                mb: 0.5,
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                '&:hover': {
+                  transform: 'translateX(8px)',
+                  bgcolor: mode === 'dark' ? 'rgba(99, 102, 241, 0.1)' : 'rgba(79, 70, 229, 0.08)',
+                },
                 '&.Mui-selected': {
-                  bgcolor: 'primary.main',
-                  color: 'primary.contrastText',
+                  background: mode === 'dark'
+                    ? 'linear-gradient(135deg, rgba(99, 102, 241, 0.3) 0%, rgba(139, 92, 246, 0.3) 100%)'
+                    : 'linear-gradient(135deg, rgba(79, 70, 229, 0.15) 0%, rgba(124, 58, 237, 0.15) 100%)',
+                  color: 'primary.main',
+                  borderLeft: '4px solid',
+                  borderColor: 'primary.main',
+                  boxShadow: mode === 'dark'
+                    ? '0px 4px 12px rgba(99, 102, 241, 0.2)'
+                    : '0px 4px 12px rgba(79, 70, 229, 0.15)',
                   '&:hover': {
-                    bgcolor: 'primary.dark',
+                    transform: 'translateX(8px)',
+                    background: mode === 'dark'
+                      ? 'linear-gradient(135deg, rgba(99, 102, 241, 0.4) 0%, rgba(139, 92, 246, 0.4) 100%)'
+                      : 'linear-gradient(135deg, rgba(79, 70, 229, 0.2) 0%, rgba(124, 58, 237, 0.2) 100%)',
                   },
                   '& .MuiListItemIcon-root': {
-                    color: 'primary.contrastText',
+                    color: 'primary.main',
                   },
                 },
               }}
             >
-              <ListItemIcon sx={{ color: location.pathname === item.path ? 'inherit' : 'inherit' }}>
+              <ListItemIcon
+                sx={{
+                  color: location.pathname === item.path ? 'primary.main' : 'text.secondary',
+                  minWidth: 40,
+                  transition: 'all 0.3s ease',
+                }}
+              >
                 {item.icon}
               </ListItemIcon>
-              <ListItemText primary={item.text} />
+              <ListItemText
+                primary={item.text}
+                primaryTypographyProps={{
+                  fontWeight: location.pathname === item.path ? 600 : 500,
+                  fontSize: '0.95rem',
+                }}
+              />
             </ListItemButton>
           </ListItem>
         ))}
@@ -210,35 +257,100 @@ const Layout: React.FC = () => {
         position="fixed"
         sx={{
           zIndex: (theme) => theme.zIndex.drawer + 1,
-          bgcolor: 'background.paper',
+          background: mode === 'dark'
+            ? 'linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.95) 100%)'
+            : 'linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.95) 100%)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
           color: 'text.primary',
-          boxShadow: 1,
+          boxShadow: mode === 'dark'
+            ? '0px 4px 20px rgba(0, 0, 0, 0.3)'
+            : '0px 4px 20px rgba(0, 0, 0, 0.08)',
+          borderBottom: `1px solid ${mode === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.08)'}`,
         }}
       >
-        <Toolbar>
+        <Toolbar sx={{ px: { xs: 2, sm: 3 } }}>
           {isMobile && (
             <IconButton
               color="inherit"
               aria-label="open drawer"
               edge="start"
               onClick={handleDrawerToggle}
-              sx={{ mr: 2 }}
+              sx={{
+                mr: 2,
+                '&:hover': {
+                  bgcolor: mode === 'dark' ? 'rgba(99, 102, 241, 0.1)' : 'rgba(79, 70, 229, 0.08)',
+                },
+              }}
             >
               <MenuIcon />
             </IconButton>
           )}
-          <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1, fontWeight: 600 }}>
+          <Typography
+            variant="h6"
+            noWrap
+            component="div"
+            sx={{
+              flexGrow: 1,
+              fontWeight: 700,
+              fontSize: { xs: '1rem', sm: '1.25rem' },
+              background: mode === 'dark'
+                ? 'linear-gradient(135deg, #818cf8 0%, #a78bfa 100%)'
+                : 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+            }}
+          >
             Enterprise Application Suite
           </Typography>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <IconButton onClick={toggleMode} color="inherit">
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+            <IconButton
+              onClick={toggleMode}
+              color="inherit"
+              sx={{
+                '&:hover': {
+                  bgcolor: mode === 'dark' ? 'rgba(99, 102, 241, 0.1)' : 'rgba(79, 70, 229, 0.08)',
+                  transform: 'rotate(180deg)',
+                },
+                transition: 'all 0.3s ease',
+              }}
+            >
               {mode === 'dark' ? <Brightness7 /> : <Brightness4 />}
             </IconButton>
-            <IconButton onClick={handleNotificationOpen} color="inherit">
+            <IconButton
+              onClick={handleNotificationOpen}
+              color="inherit"
+              sx={{
+                position: 'relative',
+                '&:hover': {
+                  bgcolor: mode === 'dark' ? 'rgba(99, 102, 241, 0.1)' : 'rgba(79, 70, 229, 0.08)',
+                },
+              }}
+            >
               <Notifications />
             </IconButton>
-            <IconButton onClick={handleMenuOpen} color="inherit">
-              <Avatar sx={{ width: 32, height: 32, bgcolor: 'primary.main' }}>
+            <IconButton
+              onClick={handleMenuOpen}
+              color="inherit"
+              sx={{
+                '&:hover': {
+                  transform: 'scale(1.1)',
+                },
+                transition: 'transform 0.2s ease',
+              }}
+            >
+              <Avatar
+                sx={{
+                  width: 36,
+                  height: 36,
+                  background: mode === 'dark'
+                    ? 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)'
+                    : 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
+                  boxShadow: '0px 4px 12px rgba(99, 102, 241, 0.3)',
+                  fontWeight: 600,
+                }}
+              >
                 {user?.firstName?.[0] || user?.username?.[0] || 'U'}
               </Avatar>
             </IconButton>
@@ -261,6 +373,10 @@ const Layout: React.FC = () => {
             '& .MuiDrawer-paper': {
               boxSizing: 'border-box',
               width: drawerWidth,
+              borderRight: `1px solid ${mode === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.08)'}`,
+              boxShadow: mode === 'dark'
+                ? '4px 0 20px rgba(0, 0, 0, 0.3)'
+                : '4px 0 20px rgba(0, 0, 0, 0.08)',
             },
           }}
         >
@@ -278,12 +394,26 @@ const Layout: React.FC = () => {
         }}
       >
         <Toolbar />
-        <Box sx={{ mb: 2 }}>
-          <Breadcrumbs aria-label="breadcrumb">
+        <Box sx={{ mb: 3 }}>
+          <Breadcrumbs
+            aria-label="breadcrumb"
+            sx={{
+              '& .MuiBreadcrumbs-separator': {
+                color: 'text.secondary',
+              },
+            }}
+          >
             {getBreadcrumbs().map((crumb, index) => {
               const isLast = index === getBreadcrumbs().length - 1;
               return isLast ? (
-                <Typography key={crumb.path} color="text.primary" sx={{ fontWeight: 500 }}>
+                <Typography
+                  key={crumb.path}
+                  color="text.primary"
+                  sx={{
+                    fontWeight: 600,
+                    fontSize: '0.95rem',
+                  }}
+                >
                   {crumb.label}
                 </Typography>
               ) : (
@@ -296,8 +426,12 @@ const Layout: React.FC = () => {
                     textDecoration: 'none',
                     color: 'primary.main',
                     cursor: 'pointer',
+                    fontWeight: 500,
+                    fontSize: '0.95rem',
+                    transition: 'all 0.2s ease',
                     '&:hover': {
-                      textDecoration: 'underline',
+                      color: 'primary.dark',
+                      transform: 'translateY(-1px)',
                     },
                   }}
                 >

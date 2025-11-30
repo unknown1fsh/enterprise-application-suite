@@ -183,23 +183,23 @@ const Products: React.FC = () => {
       id: 'category',
       label: 'Kategori',
       minWidth: 120,
-      format: (value) => (value ? <Chip label={value} size="small" /> : '-'),
+      format: (value: string | undefined) => (value ? <Chip label={value} size="small" /> : '-'),
     },
     {
       id: 'price',
       label: 'Fiyat',
       minWidth: 100,
-      format: (value) => formatCurrency(value),
+      format: (value: number | string | undefined) => formatCurrency(value),
     },
     {
       id: 'stockQuantity',
       label: 'Stok',
       minWidth: 80,
-      format: (value, row) => (
+      format: (value: number | string | undefined, row?: Product) => (
         <Chip
-          label={value}
+          label={String(value ?? 0)}
           size="small"
-          color={value < 10 ? 'error' : value < 50 ? 'warning' : 'success'}
+          color={(Number(value) ?? 0) < 10 ? 'error' : (Number(value) ?? 0) < 50 ? 'warning' : 'success'}
         />
       ),
     },
@@ -212,7 +212,7 @@ const Products: React.FC = () => {
       id: 'active',
       label: 'Durum',
       minWidth: 100,
-      format: (value) => (
+      format: (value: boolean | undefined) => (
         <Chip
           label={value !== false ? 'Aktif' : 'Pasif'}
           size="small"
@@ -223,12 +223,39 @@ const Products: React.FC = () => {
   ];
 
   return (
-    <Container maxWidth="xl">
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-        <Typography variant="h4" component="h1" sx={{ fontWeight: 600 }}>
-          Ürün Yönetimi
-        </Typography>
-        <Button variant="contained" startIcon={<Add />} onClick={() => handleOpen()}>
+    <Container maxWidth="xl" className="fade-in">
+      <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
+        <Box>
+          <Typography
+            variant="h4"
+            component="h1"
+            sx={{
+              fontWeight: 700,
+              mb: 0.5,
+              background: 'linear-gradient(135deg, #6366f1 0%, #ec4899 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+            }}
+          >
+            Ürün Yönetimi
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Ürünleri görüntüleyin, düzenleyin ve yönetin
+          </Typography>
+        </Box>
+        <Button
+          variant="contained"
+          startIcon={<Add />}
+          onClick={() => handleOpen()}
+          sx={{
+            borderRadius: 3,
+            px: 3,
+            py: 1.5,
+            textTransform: 'none',
+            fontWeight: 600,
+          }}
+        >
           Yeni Ürün
         </Button>
       </Box>
@@ -245,38 +272,80 @@ const Products: React.FC = () => {
         </Alert>
       )}
 
-      <Grid container spacing={2} sx={{ mb: 3 }}>
-        <Grid item xs={12} sm={4}>
-          <Card>
+      <Grid container spacing={3} sx={{ mb: 4 }}>
+        <Grid size={{ xs: 12, sm: 4 }}>
+          <Card
+            sx={{
+              background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(99, 102, 241, 0.05) 100%)',
+              border: '1px solid',
+              borderColor: 'primary.main',
+              borderWidth: 2,
+            }}
+          >
             <CardContent>
-              <Typography variant="body2" color="text.secondary" gutterBottom>
+              <Typography variant="body2" color="text.secondary" gutterBottom sx={{ fontWeight: 500, mb: 1 }}>
                 Toplam Ürün
               </Typography>
-              <Typography variant="h5" sx={{ fontWeight: 600 }}>
+              <Typography
+                variant="h4"
+                sx={{
+                  fontWeight: 700,
+                  background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
+                }}
+              >
                 {totalProducts}
               </Typography>
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={12} sm={4}>
-          <Card>
+        <Grid size={{ xs: 12, sm: 4 }}>
+          <Card
+            sx={{
+              background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(245, 158, 11, 0.05) 100%)',
+              border: '1px solid',
+              borderColor: 'warning.main',
+              borderWidth: 2,
+            }}
+          >
             <CardContent>
-              <Typography variant="body2" color="text.secondary" gutterBottom>
+              <Typography variant="body2" color="text.secondary" gutterBottom sx={{ fontWeight: 500, mb: 1 }}>
                 Düşük Stok
               </Typography>
-              <Typography variant="h5" sx={{ fontWeight: 600, color: 'warning.main' }}>
+              <Typography
+                variant="h4"
+                sx={{
+                  fontWeight: 700,
+                  color: 'warning.main',
+                }}
+              >
                 {lowStockProducts}
               </Typography>
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={12} sm={4}>
-          <Card>
+        <Grid size={{ xs: 12, sm: 4 }}>
+          <Card
+            sx={{
+              background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(16, 185, 129, 0.05) 100%)',
+              border: '1px solid',
+              borderColor: 'success.main',
+              borderWidth: 2,
+            }}
+          >
             <CardContent>
-              <Typography variant="body2" color="text.secondary" gutterBottom>
+              <Typography variant="body2" color="text.secondary" gutterBottom sx={{ fontWeight: 500, mb: 1 }}>
                 Toplam Değer
               </Typography>
-              <Typography variant="h5" sx={{ fontWeight: 600, color: 'primary.main' }}>
+              <Typography
+                variant="h4"
+                sx={{
+                  fontWeight: 700,
+                  color: 'success.main',
+                }}
+              >
                 {formatCurrency(totalValue)}
               </Typography>
             </CardContent>
@@ -300,12 +369,12 @@ const Products: React.FC = () => {
               label: 'Kategori',
               options: [
                 { value: '', label: 'Tümü' },
-                ...categories.map((cat) => ({ value: cat, label: cat })),
+                ...categories.filter((cat): cat is string => cat !== undefined).map((cat) => ({ value: cat, label: cat })),
               ],
               value: categoryFilter,
             },
           ]}
-          onFilterChange={(key, value) => {
+          onFilterChange={(key: string, value: string) => {
             if (key === 'category') setCategoryFilter(value);
           }}
           onClearFilters={() => {
@@ -320,7 +389,7 @@ const Products: React.FC = () => {
         loading={loading}
         onEdit={handleOpen}
         onDelete={handleDeleteClick}
-        getRowId={(row) => row.id || 0}
+        getRowId={(row: Product) => row.id || 0}
         emptyMessage="Ürün bulunamadı"
         emptyActionLabel="Yeni Ürün Ekle"
         onEmptyAction={() => handleOpen()}
@@ -348,7 +417,7 @@ const Products: React.FC = () => {
               rows={3}
             />
             <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
+              <Grid size={{ xs: 12, sm: 6 }}>
                 <TextField
                   fullWidth
                   label="Fiyat"
@@ -363,7 +432,7 @@ const Products: React.FC = () => {
                   }}
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid size={{ xs: 12, sm: 6 }}>
                 <TextField
                   fullWidth
                   label="Stok Miktarı"
@@ -378,7 +447,7 @@ const Products: React.FC = () => {
               </Grid>
             </Grid>
             <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
+              <Grid size={{ xs: 12, sm: 6 }}>
                 <TextField
                   fullWidth
                   label="Kategori"
@@ -386,7 +455,7 @@ const Products: React.FC = () => {
                   onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid size={{ xs: 12, sm: 6 }}>
                 <TextField
                   fullWidth
                   label="SKU"

@@ -39,33 +39,5 @@ INSERT INTO users (
     false
 );
 
--- Varsayılan normal kullanıcı
--- Kullanıcı adı: user
--- Şifre: user123
--- Şifre: user123 (BCrypt hash: $2a$10$rKqJqJqJqJqJqJqJqJqJqOqJqJqJqJqJqJqJqJqJqJqJqJqJqJqJq)
-INSERT INTO users (
-    username, 
-    email, 
-    password, 
-    first_name, 
-    last_name, 
-    role, 
-    active, 
-    created_at, 
-    updated_at, 
-    deleted
-) VALUES (
-    'user',
-    'user@example.com',
-    '$2a$10$rKqJqJqJqJqJqJqJqJqJqOqJqJqJqJqJqJqJqJqJqJqJqJqJqJqJq', -- user123
-    'Test',
-    'User',
-    'USER',
-    true,
-    NOW(),
-    NOW(),
-    false
-);
-
-SELECT 'Varsayılan kullanıcılar oluşturuldu!' as message;
-SELECT username, email, role FROM users WHERE username IN ('admin', 'user');
+SELECT 'Varsayılan kullanıcı oluşturuldu!' as message;
+SELECT username, email, role FROM users WHERE username = 'admin';

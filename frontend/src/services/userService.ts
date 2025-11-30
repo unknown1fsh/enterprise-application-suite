@@ -14,10 +14,11 @@ export interface User {
 export interface UserRequest {
   username: string;
   email: string;
-  password: string;
+  password?: string;
   firstName?: string;
   lastName?: string;
   role?: string;
+  active?: boolean;
 }
 
 export interface LoginRequest {
@@ -36,6 +37,8 @@ export const userService = {
   getById: (id: number) => api.get(`/user/users/${id}`),
   register: (user: UserRequest) => api.post('/user/users/register', user),
   login: (credentials: LoginRequest) => api.post('/user/users/login', credentials),
+  update: (id: number, user: Partial<UserRequest>) => api.put(`/user/users/${id}`, user),
+  delete: (id: number) => api.delete(`/user/users/${id}`),
   getByUsername: (username: string) => api.get(`/user/users/username/${username}`),
   getByEmail: (email: string) => api.get(`/user/users/email/${email}`),
   checkUsername: (username: string) => api.get(`/user/users/exists/username/${username}`),
